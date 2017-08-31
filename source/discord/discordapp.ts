@@ -7,6 +7,12 @@ client.on('ready', () => {
     debug('Bot is ready.');
 });
 
+client.on('message', (message) => {
+    if (message.content === 'ping') {
+        message.channel.send('pong');
+    }
+});
+
 if (!process.env.DISCORDTOKEN) {
     console.error('DISCORDTOKEN environment variable not specified.');
 }
