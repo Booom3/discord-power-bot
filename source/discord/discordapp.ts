@@ -2,6 +2,7 @@ const debug = require('debug')('bot:discord');
 import * as db from '../database';
 import * as Discord from 'discord.js';
 const client = new Discord.Client();
+import * as rwc from 'random-weighted-choice';
 
 var commandString;
 
@@ -16,7 +17,12 @@ class StringCommand extends Command {
 
 class RandomStringCommand extends Command {
     type = "randomstring";
-    public strings: string[];
+    public strings: WeightedString[];
+}
+
+class WeightedString {
+    weight: number;
+    string: string;
 }
 
 client.on('ready', () => {
@@ -118,7 +124,8 @@ client.on('message', async (message) => {
         }
         let response = rows[0].response;
         if (response.type === "randomstring") {
-            let res = response.strings[Math.floor(Math.random() * response.strings.length)].string;
+            let rsc: RandomStringCommand = response;
+            let res = rwc(rsc.strings.map(x => {return {weight: x.weight, id: x.string}}));
             debug(command + ' used, sending response: ' + res);
             message.channel.send(res);
             return;
