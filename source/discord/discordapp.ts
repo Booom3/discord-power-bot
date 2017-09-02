@@ -21,7 +21,7 @@ class RandomStringCommand extends Command {
 }
 
 class WeightedString {
-    weight: number;
+    weight: string;
     string: string;
 }
 
@@ -35,7 +35,6 @@ client.on('message', async (message) => {
     }
 
     let split = message.content.split(' ');
-    debug(split[0]);
     if (split.length > 1 && split[0].replace('!', '') === commandString) {
         if (!message.member.hasPermission("MANAGE_ROLES", false, true, true)) {
             return;
@@ -101,9 +100,9 @@ client.on('message', async (message) => {
                 message.channel.send(`Command you are trying to extend is of type ${response.type} which is not extendable.`);
                 return;
             }
-            response.strings.push({weight: commandWeight, string: commandResponse});
+            let newResponse = {weight: commandWeight, string: commandResponse};
             try {
-                await db.query('UPDATE commands SET response = $1 WHERE guildid = $2 AND command = $3', [response, message.guild.id, commandName]);
+                await db.query("UPDATE commands SET response = jsonb_set(response, '{strings}', response->'strings' || $1) WHERE guildid = $2 AND command = $3", [newResponse, message.guild.id, commandName]);
                 debug(`Command ${commandName} on ${message.guild.name} updated with ${commandResponse} at weight ${commandWeight}.`);
                 message.channel.send(`Command ${commandName} updated with ${commandResponse} at weight ${commandWeight}.`);
                 return;
@@ -125,7 +124,7 @@ client.on('message', async (message) => {
         let response = rows[0].response;
         if (response.type === "randomstring") {
             let rsc: RandomStringCommand = response;
-            let res = rwc(rsc.strings.map(x => {return {weight: x.weight, id: x.string}}));
+            let res = rwc(rsc.strings.map(x => {return {weight: parseInt(x.weight), id: x.string}}));
             debug(command + ' used, sending response: ' + res);
             message.channel.send(res);
             return;
