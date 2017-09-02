@@ -30,6 +30,9 @@ client.on('ready', () => {
 });
 
 client.on('message', async (message) => {
+    if (message.author.id === client.user.id) {
+        return;
+    }
     if (message.content === 'ping') {
         message.channel.send('pong');
     }
@@ -102,7 +105,12 @@ client.on('message', async (message) => {
             }
             let newResponse = {weight: commandWeight, string: commandResponse};
             try {
-                await db.query("UPDATE commands SET response = jsonb_set(response, '{strings}', response->'strings' || $1) WHERE guildid = $2 AND command = $3", [newResponse, message.guild.id, commandName]);
+                await db.query(`
+                    UPDATE commands
+                    SET response = jsonb_set(response, '{strings}', response->'strings' || $1)
+                    WHERE guildid = $2 AND command = $3
+                    `,
+                    [newResponse, message.guild.id, commandName]);
                 debug(`Command ${commandName} on ${message.guild.name} updated with ${commandResponse} at weight ${commandWeight}.`);
                 message.channel.send(`Command ${commandName} updated with ${commandResponse} at weight ${commandWeight}.`);
                 return;

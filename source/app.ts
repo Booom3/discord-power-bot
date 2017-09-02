@@ -5,7 +5,7 @@ import * as cookieParser from 'cookie-parser';
 import * as bodyParser from 'body-parser';
 import * as moment from 'moment';
 
-import * as index from './routes/index';
+import index from './routes/index';
 
 var app = express();
 
@@ -39,4 +39,4 @@ app.use(function(err, req, res, next) {
   res.send(err.message);
 });
 
-export = app;
+export default app;
