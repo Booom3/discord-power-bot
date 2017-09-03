@@ -129,21 +129,69 @@ client.on('message', async (message) => {
         // removecommand
         else if (split[1] === "removecommand" && split.length > 2) {
             let commandName = split[2];
-            try {
-                const { rows, rowCount } = await db.query(`
+            const { rows, rowCount } = await db.query(`
+                WITH tempcommand AS (
+                    DELETE FROM commands
+                    WHERE guildid = $1 AND command = $2
+                    RETURNING *
+                )
+                INSERT INTO deleted_commands
+                SELECT * FROM tempcommand;
+                `,
+                [message.guild.id, commandName]);
+
+            if (rowCount === 0) {
+                message.channel.send(`Command ${commandName} does not exist.`);
+            }
+
+            debug (`Command ${commandName} on ${message.guild.name} removed.`);
+            message.channel.send(`Command ${commandName} removed. You can restore it using "restorecommand ${commandName}."`);
+        }
+
+        // restorecommand
+        else if (split[1] === "restorecommand" && split.length > 2) {
+            let commandName = split[2];
+            
+            const { rows } = await db.query(`
+                SELECT * FROM deleted_commands
+                WHERE guildid = $1 AND command = $2
+                `,
+                [message.guild.id, commandName]);
+            
+            if (rows.length === 0) {
+                message.channel.send(`No command ${commandName} found to restore.`);
+                return;
+            }
+
+            let deletedCommandId;
+            if (split.length > 3) {
+                let split3 = parseInt(split[3]);
+                if (split3 !== NaN && split3 <= rows.length && split3 >= 0) {
+                    deletedCommandId = rows[split3].id;
+                }
+            }
+
+            if (!deletedCommandId && rows.length > 1) {
+                let returnMessage = `More than one command ${commandName} found.`;
+                rows.forEach((val, i) => returnMessage += `\n${i}: ${val.response.string}`);
+                message.channel.send(returnMessage);
+                return;
+            }
+
+            else {
+                await db.query(`
                     WITH tempcommand AS (
-                        DELETE FROM commands
-                        WHERE guildid = $1 AND command = $2
+                        DELETE FROM deleted_commands
+                        WHERE guildid = $1 AND command = $2 AND id = $3
                         RETURNING *
                     )
-                    INSERT INTO deleted_commands
-                    SELECT * FROM tempcommand;
+                    INSERT INTO commands
+                    SELECT guildid, command, response FROM tempcommand;
                     `,
-                    [message.guild.id, commandName]);
+                    [message.guild.id, commandName, deletedCommandId || rows[0].id]);
 
-                if (rowCount === 0) {
-                    message.channel.send(`Command ${commandName} does not exist.`);
-                }
+                debug(`Command ${commandName} on ${message.guild.name} restored.`);
+                message.channel.send(`Command ${commandName} restored.`);
             }
         }
     }
