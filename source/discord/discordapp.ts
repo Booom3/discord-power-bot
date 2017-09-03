@@ -42,6 +42,8 @@ client.on('message', async (message) => {
         if (!message.member.hasPermission("MANAGE_ROLES", false, true, true)) {
             return;
         }
+
+        // addcommand
         if (split[1] === "addcommand" && split.length > 4) {
             let commandType: string = split[2];
             if (commandType !== 'string' && commandType !== 'randomstring') {
@@ -82,6 +84,8 @@ client.on('message', async (message) => {
                 return;
             }
         }
+
+        // extendcommand
         else if (split[1] === "extendcommand" && split.length > 3) {
             let commandName, commandResponse, commandWeight = 1000;
             if (split[2].indexOf('weight:') !== -1 && split.length > 4) {
@@ -119,6 +123,27 @@ client.on('message', async (message) => {
                 debug(ex);
                 message.channel.send('Something went horribly wrong.');
                 return;
+            }
+        }
+
+        // removecommand
+        else if (split[1] === "removecommand" && split.length > 2) {
+            let commandName = split[2];
+            try {
+                const { rows, rowCount } = await db.query(`
+                    WITH tempcommand AS (
+                        DELETE FROM commands
+                        WHERE guildid = $1 AND command = $2
+                        RETURNING *
+                    )
+                    INSERT INTO deleted_commands
+                    SELECT * FROM tempcommand;
+                    `,
+                    [message.guild.id, commandName]);
+
+                if (rowCount === 0) {
+                    message.channel.send(`Command ${commandName} does not exist.`);
+                }
             }
         }
     }
