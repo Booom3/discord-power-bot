@@ -30,11 +30,8 @@ client.on('ready', () => {
 });
 
 client.on('message', async (message) => {
-    if (message.author.id === client.user.id) {
+    if (message.author.bot) {
         return;
-    }
-    if (message.content === 'ping') {
-        message.channel.send('pong');
     }
 
     let split = message.content.split(' ');
