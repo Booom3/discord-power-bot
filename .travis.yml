@@ -1,12 +1,12 @@
 language: node_js
 node_js:
-  - "8"
+ - "8"
 
-before-install:
-  - npm install -g typescript
+before_install:
+ - npm install -g typescript
 
 install:
-  - npm install
+ - npm install
 
-before-script:
-  - tsc
+before_script:
+ - tsc
