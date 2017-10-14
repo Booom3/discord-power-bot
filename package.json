@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "test": "node ./bin/www",
-    "start": "node ./bin/www"
+    "test": "node ./distribution/binary/worldwideweb",
+    "start": "node ./distribution/binary/worldwideweb"
   },
   "dependencies": {
     "@types/express": "^4.0.37",
