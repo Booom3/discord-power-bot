@@ -1,6 +1,7 @@
 const debug = require('debug')('bot:discord');
 import * as db from '../../database';
 import { Argv } from '../argvtype';
+import * as CommandTypes from '../commandtypes';
 
 export const command = 'extendcommand <command> [response..]';
 export const describe = 'Extends a command. Works on types: randomstring';
@@ -23,8 +24,9 @@ export const handler = async function(argv: Argv) {
         return;
     }
     let response = rows[0].response;
-    if (response.type !== 'randomstring') {
-        argv.message.channel.send(`Command you are trying to extend is of type ${response.type} which is not extendable.`);
+    let command = CommandTypes.getExtendable(response);
+    if (!command) {
+        argv.message.channel.send(`Command you are trying to extend is of type ${command.type} which is not extendable.`);
         return;
     }
     let newResponse = {weight: commandWeight, string: commandResponse};

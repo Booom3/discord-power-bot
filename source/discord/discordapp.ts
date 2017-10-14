@@ -2,32 +2,13 @@ const debug = require('debug')('bot:discord');
 import * as db from '../database';
 import * as Discord from 'discord.js';
 const client = new Discord.Client();
-import * as rwc from 'random-weighted-choice';
 import * as yargs from 'yargs';
+import * as CommandTypes from './commandtypes';
 const parser = yargs
     .commandDir('./cmds')
     .help();
 
 var commandString;
-
-abstract class Command {
-    public type: string;
-}
-
-class StringCommand extends Command {
-    public type = "string";
-    public string: string;
-}
-
-class RandomStringCommand extends Command {
-    type = "randomstring";
-    public strings: WeightedString[];
-}
-
-class WeightedString {
-    weight: string;
-    string: string;
-}
 
 client.on('ready', () => {
     debug('Bot is ready.');
@@ -58,20 +39,20 @@ client.on('message', async (message) => {
             return;
         }
         let response = rows[0].response;
-        if (response.type === "randomstring") {
-            let rsc: RandomStringCommand = response;
-            let res = rwc(rsc.strings.map(x => {return {weight: parseInt(x.weight), id: x.string}}));
-            debug(command + ' used, sending response: ' + res);
-            message.channel.send(res);
+        let res = CommandTypes.getClass(response).getResponse();
+        if (!res) {
+            debug ('Unknown class returned from DB.');
+            debug(response);
             return;
         }
-        else if (response.type === "string") {
-            let res = response.string;
-            debug(command + ' used, sending response: ' + res);
-            message.channel.send(res);
-            return;
-        }
+        debug(command + ' used, sending response: ' + res);
+        message.channel.send(res);
+        return;
     }
+});
+
+client.on('error', (err) => {
+    debug(err);
 });
 
 if (!process.env.DISCORDTOKEN) {
