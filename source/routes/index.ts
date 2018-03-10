@@ -3,7 +3,7 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-	res.send('<a href="https://discordapp.com/api/oauth2/authorize?client_id=352730127479865354&scope=bot&permissions=0">Add this bot</a>'); 
+	res.send(`<html><body>https://discordapp.com/api/oauth2/authorize?client_id=<strong>&lt;YOUR ID HERE&gt;</strong>&scope=bot&permissions=0</body></html>`); 
 });
 
 export default router;
