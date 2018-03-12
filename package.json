@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "test": "node ./distribution/binary/worldwideweb",
+    "test": "node ./distribution/binary/worldwideweb --run-tests",
     "start": "node ./distribution/binary/worldwideweb"
   },
   "dependencies": {
