@@ -7,6 +7,7 @@
 import app from '../app';
 var debug = require('debug')('bot:server');
 var http = require('http');
+const argv = require('yargs').argv;
 
 /**
  * Get port from environment and store in Express.
@@ -87,4 +88,8 @@ function onListening() {
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
+  if (argv.runTests) {
+    debug('Tests finished');
+    process.exit();
+  }
 }
