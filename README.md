@@ -29,4 +29,12 @@ you a link where you put in the client ID of the app you created on the Discord 
 Paste the finished link into your browser and you should be presented with a screen that lets you add the bot to any server
 that you have admin rights on.  
   
+## The Database
+
+Included with the project is `dpbdbscript.pgsql`. This file sets up your PostgreSQL database for use with Discord Power Bot. This is necessary to access most of the functionality of the bot.  
+* Install PostgreSQL
+* Launch the PostgreSQL executable with the following arguments
+* `-U postgres -f <path\to\dpbdbscript.pgsql>`
+* If you want to use a user other than `postgres`, change it to the user you created
+  
 This page is a **heavy WIP** and so will get a lot better over time.
