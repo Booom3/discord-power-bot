@@ -1,9 +1,10 @@
 const debug = require('debug')('bot:discord');
-import * as db from '../../database';
-import { Argv } from '../argvtype';
+import * as db from '../../../../database';
+import { Argv } from '../../../argvtype';
 
-export const command = 'addcommand <type> <command> [response..]';
-export const describe = 'Adds a new command. Valid types: string, randomstring';
+export const command = 'add <name> [response..]';
+export const aliases = ['a'];
+export const describe = 'Adds a new randomstring type response to the bot. This replies to a command with a random string out of a collection.';
 export const builder = {
     weight: {
         describe: 'How likely it is to appear. Used for types: randomstring',
@@ -13,23 +14,19 @@ export const builder = {
 };
 
 export const handler = async function(argv: Argv) {
-    let commandType: string = argv.type;
-    if (commandType !== 'string' && commandType !== 'randomstring') {
-        argv.message.channel.send("Invalid commandtype.");
-        return;
-    }
-    let commandName = argv.command,
+    let commandName = argv.name,
         commandResponse = argv.response.join(' '),
         commandWeight = argv.weight;
-    let commandResponseObject = { type: commandType };
-    if (commandType === 'string') {
-        commandResponseObject['string'] = commandResponse;
-    }
-    else if (commandType === 'randomstring') {
-        commandResponseObject['strings'] = [{weight: commandWeight, string: commandResponse}];
-    }
+    let commandResponseObject = {
+        type: 'randomstring',
+        strings: [
+            {
+                weight: commandWeight,
+                string: commandResponse
+            }
+        ]
+    };
     try {
-        
         await db.query('INSERT INTO commands(guildid, command, response) VALUES($1, $2, $3)', [
             argv.message.guild.id,
             commandName,

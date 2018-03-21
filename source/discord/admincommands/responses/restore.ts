@@ -1,8 +1,9 @@
 const debug = require('debug')('bot:discord');
-import * as db from '../../database';
-import { Argv } from '../argvtype';
+import * as db from '../../../database';
+import { Argv } from '../../argvtype';
 
-export const command = 'restorecommand <command> [id]';
+export const command = 'restore <name> [id]';
+export const aliases = ['R'];
 export const desc = 'Restores a removed command';
 export const builder = {};
 

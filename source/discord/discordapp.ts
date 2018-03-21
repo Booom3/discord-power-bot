@@ -5,7 +5,7 @@ const client = new Discord.Client();
 import * as yargs from 'yargs';
 import * as CommandTypes from './commandtypes';
 const parser = yargs
-    .commandDir('./cmds')
+    .commandDir('./admincommands')
     .help();
 
 var commandString;
