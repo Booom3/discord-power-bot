@@ -17,8 +17,8 @@ export const handler = async function(argv: Argv) {
     let commandName = argv.name,
         commandResponse = argv.response.join(' '),
         commandWeight = argv.weight;
-        
-    let newResponse = {weight: commandWeight, string: commandResponse};
+
+    let newResponse = {weight: commandWeight, id: commandResponse};
     try {
         let ret = await db.query(`
             UPDATE commands

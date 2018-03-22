@@ -6,6 +6,7 @@ import * as yargs from 'yargs';
 import * as CommandTypes from './commandtypes';
 const parser = yargs
     .commandDir('./admincommands')
+    .exitProcess(false)
     .help();
 
 var commandString;
@@ -34,19 +35,14 @@ client.on('message', async (message) => {
 
     if (message.content[0] === '!') {
         let command = message.content.split(' ')[0].replace('!', '');
-        const { rows } = await db.query('SELECT response FROM commands WHERE guildid = $1 AND command = $2', [message.guild.id, command]);
+        const { rows } = await db.query('SELECT * FROM commands WHERE guildid = $1 AND command = $2', [message.guild.id, command]);
         if (rows.length === 0) {
             return;
         }
-        let response = rows[0].response;
-        let res = CommandTypes.getClass(response).getResponse();
-        if (!res) {
-            debug ('Unknown class returned from DB.');
-            debug(response);
-            return;
-        }
-        debug(command + ' used, sending response: ' + res);
-        message.channel.send(res);
+        parser.parse(
+            ['response', rows[0].type, 'get', rows[0].command],
+            {message: message, row: rows[0]}
+        );
         return;
     }
 });

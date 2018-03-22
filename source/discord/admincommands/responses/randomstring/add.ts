@@ -18,16 +18,15 @@ export const handler = async function(argv: Argv) {
         commandResponse = argv.response.join(' '),
         commandWeight = argv.weight;
     let commandResponseObject = {
-        type: 'randomstring',
         strings: [
             {
                 weight: commandWeight,
-                string: commandResponse
+                id: commandResponse
             }
         ]
     };
     try {
-        await db.query('INSERT INTO commands(guildid, command, response) VALUES($1, $2, $3)', [
+        await db.query(`INSERT INTO commands(guildid, command, type, response) VALUES($1, $2, 'randomstring', $3)`, [
             argv.message.guild.id,
             commandName,
             JSON.stringify(commandResponseObject)

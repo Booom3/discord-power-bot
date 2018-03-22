@@ -10,11 +10,10 @@ export const handler = async function(argv: Argv) {
     let commandName = argv.name,
         commandResponse = argv.response.join(' ');
     let commandResponseObject = {
-        type: 'string',
         string: commandResponse
     };
     try {
-        await db.query('INSERT INTO commands(guildid, command, response) VALUES($1, $2, $3)', [
+        await db.query(`INSERT INTO commands(guildid, command, type, response) VALUES($1, $2, 'string', $3)`, [
             argv.message.guild.id,
             commandName,
             JSON.stringify(commandResponseObject)
