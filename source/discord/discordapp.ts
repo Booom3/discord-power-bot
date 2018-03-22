@@ -3,7 +3,6 @@ import * as db from '../database';
 import * as Discord from 'discord.js';
 const client = new Discord.Client();
 import * as yargs from 'yargs';
-import * as CommandTypes from './commandtypes';
 const parser = yargs
     .commandDir('./admincommands')
     .exitProcess(false)
