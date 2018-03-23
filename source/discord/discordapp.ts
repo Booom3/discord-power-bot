@@ -6,6 +6,7 @@ import * as yargs from 'yargs';
 const parser = yargs
     .commandDir('./admincommands')
     .exitProcess(false)
+    .wrap(null)
     .help();
 
 var commandString;
@@ -19,13 +20,24 @@ client.on('message', async (message) => {
         return;
     }
 
-    let split = message.content.split(' ');
-    if (split.length > 1 && split[0].replace('!', '') === commandString) {
+    let firstNewline = message.content.indexOf('\n'), firstLine;
+    if (firstNewline === -1)
+        firstLine = message.content.split(' ');
+    else
+        firstLine = message.content.substring(0, firstNewline).split(' ');
+    if (firstLine.length > 1 && firstLine[0].replace('!', '') === commandString) {
         if (!message.member.hasPermission("MANAGE_ROLES", false, true, true)) {
             return;
         }
 
-        parser.parse(split.slice(1), {message: message}, (err, argv, output) => {
+        let responseText;
+        if (firstNewline !== -1) {
+            responseText = message.content.substr(firstNewline + 1);
+        }
+        else {
+            responseText = null;
+        }
+        parser.parse(firstLine.slice(1), {message: message, responseText: responseText, print: (out) => message.channel.send(out)}, (err, argv, output) => {
             if (output) {
                 message.channel.send('```' + output + '```');
             }
@@ -40,7 +52,7 @@ client.on('message', async (message) => {
         }
         parser.parse(
             ['response', rows[0].type, 'get', rows[0].command],
-            {message: message, row: rows[0]}
+            {message: message, row: rows[0], print: (out) => message.channel.send(out)}
         );
         return;
     }

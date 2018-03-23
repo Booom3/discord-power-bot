@@ -15,7 +15,7 @@ export const handler = async function(argv: Argv) {
         row = argv.row;
     }
     else {
-        const { rows } = await db.query(`SELECT response FROM commands WHERE guildid = $1 AND command = $2 AND type = 'string'`,
+        const { rows } = await db.query(`SELECT response FROM commands WHERE guildid = $1 AND command = $2 AND type = 'randomstring'`,
             [argv.message.guild.id, commandName]);
         if (rows.length === 0) {
             return;
@@ -24,6 +24,6 @@ export const handler = async function(argv: Argv) {
     }
     let res = rwc(row.response.strings);
     debug(`${commandName} used, sending response ${res}`);
-    argv.message.channel.send(res);
+    argv.print(res);
     return;
 }

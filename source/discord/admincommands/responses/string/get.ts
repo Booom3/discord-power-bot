@@ -22,6 +22,6 @@ export const handler = async function(argv: Argv) {
     }
     let res = row.response.string;
     debug(`${commandName} used, sending response ${res}`);
-    argv.message.channel.send(res);
+    argv.print(res);
     return;
 }

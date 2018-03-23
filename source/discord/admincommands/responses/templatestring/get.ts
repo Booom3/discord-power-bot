@@ -22,6 +22,10 @@ export const handler = async function(argv: Argv) {
             return;
         }
         row = rows[0];
+        let res = row.response.string;
+        debug(`${commandName} used, sending response ${res}`);
+        argv.print(res);
+        return;
     }
 
     let templates = {
@@ -35,6 +39,6 @@ export const handler = async function(argv: Argv) {
         return p1.split('.').reduce((t, val) => t && t[val] || null, templates) || `<Template \`${match}\` not found>`;
     });
     debug(`${commandName} used, sending response ${res}`);
-    argv.message.channel.send(res);
+    argv.print(res);
     return;
 }

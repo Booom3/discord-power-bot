@@ -10,17 +10,17 @@ export const describe = 'Gets all possible responses to this command.';
 
 export const handler = async function(argv: Argv) {
     let commandName = argv.name;
-    const { rows } = await db.query(`SELECT response FROM commands WHERE guildid = $1 AND command = $2 AND type = 'string'`,
+    const { rows } = await db.query(`SELECT response FROM commands WHERE guildid = $1 AND command = $2 AND type = 'randomstring'`,
         [argv.message.guild.id, commandName]);
     if (rows.length === 0) {
-        argv.message.channel.send(`Command ${commandName} not found.`);
+        argv.print(`Command ${commandName} not found.`);
         return;
     }
     let res = [];
     rows[0].response.strings.forEach((val) => {
-        res.push('Weight: ' + val.weight + ' Text: ' + val.id + '\n');
+        res.push('Weight: ' + val.weight + ' Text: ' + val.id);
     });
     debug(`Returning all results for ${commandName}`);
-    argv.message.channel.send(res.toString());
+    argv.print(res.join("\n"));
     return;
 }

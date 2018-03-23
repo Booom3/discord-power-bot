@@ -23,21 +23,21 @@ export const handler = async function(argv: Argv) {
         let ret = await db.query(`
             UPDATE commands
             SET response = jsonb_set(response, '{strings}', response->'strings' || $1)
-            WHERE guildid = $2 AND command = $3
+            WHERE guildid = $2 AND command = $3 AND type = 'randomstring'
             `,
             [newResponse, argv.message.guild.id, commandName]);
             
         if (ret.rowCount === 0) {
-            argv.message.channel.send(`No command named ${commandName} found.`);
+            argv.print(`No command named ${commandName} found.`);
             return;
         }
         debug(`Command ${commandName} on ${argv.message.guild.name} updated with ${commandResponse} at weight ${commandWeight}.`);
-        argv.message.channel.send(`Command ${commandName} updated with ${commandResponse} at weight ${commandWeight}.`);
+        argv.print(`Command ${commandName} updated with ${commandResponse} at weight ${commandWeight}.`);
         return;
     }
     catch (ex) {
         debug(ex);
-        argv.message.channel.send(`Something went horribly wrong.`);
+        argv.print(`Something went horribly wrong.`);
         return;
     }
 }

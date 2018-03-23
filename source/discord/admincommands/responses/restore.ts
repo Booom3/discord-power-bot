@@ -8,7 +8,7 @@ export const desc = 'Restores a removed command';
 export const builder = {};
 
 export const handler = async function(argv: Argv) {
-    let commandName = argv.command;
+    let commandName = argv.name;
                 
     const { rows } = await db.query(`
         SELECT * FROM deleted_commands
@@ -17,7 +17,7 @@ export const handler = async function(argv: Argv) {
         [argv.message.guild.id, commandName]);
 
     if (rows.length === 0) {
-        argv.message.channel.send(`No command ${commandName} found to restore.`);
+        argv.print(`No command ${commandName} found to restore.`);
         return;
     }
 
@@ -26,7 +26,7 @@ export const handler = async function(argv: Argv) {
     if (!deletedCommandId && deletedCommandId !== 0 && rows.length > 1) {
         let returnMessage = `More than one command ${commandName} found.`;
         rows.forEach((val, i) => returnMessage += `\n${i}: ${val.response.string}`);
-        argv.message.channel.send(returnMessage);
+        argv.print(returnMessage);
         return;
     }
 
@@ -38,16 +38,16 @@ export const handler = async function(argv: Argv) {
                     WHERE guildid = $1 AND command = $2 AND id = $3
                     RETURNING *
                 )
-                INSERT INTO commands
-                SELECT guildid, command, response FROM tempcommand;
+                INSERT INTO commands(guildid, command, type, response)
+                SELECT guildid, command, type, response FROM tempcommand
                 `,
                 [argv.message.guild.id, commandName, deletedCommandId || rows[0].id]);
 
             debug(`Command ${commandName} on ${argv.message.guild.name} restored.`);
-            argv.message.channel.send(`Command ${commandName} restored.`);
+            argv.print(`Command ${commandName} restored.`);
         } catch (ex) {
             debug(ex);
-            argv.message.channel.send(`Something went wrong. A command with the same name likely already exists.`);
+            argv.print(`Something went wrong. A command with the same name likely already exists.`);
         }
     }
 }
