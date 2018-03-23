@@ -11,6 +11,7 @@ CREATE TABLE public.commands
 WITH (
     OIDS = FALSE
 )
+TABLESPACE pg_default;
 CREATE SEQUENCE public.deleted_commands_id_seq
     INCREMENT 1
     START 1
