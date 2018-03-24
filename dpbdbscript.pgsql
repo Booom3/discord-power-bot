@@ -4,6 +4,7 @@ CREATE TABLE public.commands
 (
     guildid numeric(20) NOT NULL,
     command text COLLATE pg_catalog."default" NOT NULL,
+    type text NOT NULL,
     response jsonb NOT NULL,
     CONSTRAINT commands_guildid_command_key UNIQUE (guildid, command)
 )
@@ -21,6 +22,7 @@ CREATE TABLE public.deleted_commands
 (
     guildid numeric(20) NOT NULL,
     command text COLLATE pg_catalog."default" NOT NULL,
+    type text NOT NULL,
     response jsonb NOT NULL,
     id integer NOT NULL DEFAULT nextval('deleted_commands_id_seq'::regclass),
     CONSTRAINT deleted_commands_pkey PRIMARY KEY (id)

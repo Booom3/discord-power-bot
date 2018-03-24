@@ -3,9 +3,10 @@ import * as db from '../database';
 import * as Discord from 'discord.js';
 const client = new Discord.Client();
 import * as yargs from 'yargs';
-import * as CommandTypes from './commandtypes';
 const parser = yargs
-    .commandDir('./cmds')
+    .commandDir('./admincommands')
+    .exitProcess(false)
+    .wrap(null)
     .help();
 
 var commandString;
@@ -19,13 +20,24 @@ client.on('message', async (message) => {
         return;
     }
 
-    let split = message.content.split(' ');
-    if (split.length > 1 && split[0].replace('!', '') === commandString) {
+    let firstNewline = message.content.indexOf('\n'), firstLine;
+    if (firstNewline === -1)
+        firstLine = message.content.split(' ');
+    else
+        firstLine = message.content.substring(0, firstNewline).split(' ');
+    if (firstLine.length > 1 && firstLine[0].replace('!', '') === commandString) {
         if (!message.member.hasPermission("MANAGE_ROLES", false, true, true)) {
             return;
         }
 
-        parser.parse(split.slice(1), {message: message}, (err, argv, output) => {
+        let responseText;
+        if (firstNewline !== -1) {
+            responseText = message.content.substr(firstNewline + 1);
+        }
+        else {
+            responseText = null;
+        }
+        parser.parse(firstLine.slice(1), {message: message, responseText: responseText, print: (out) => message.channel.send(out)}, (err, argv, output) => {
             if (output) {
                 message.channel.send('```' + output + '```');
             }
@@ -34,19 +46,14 @@ client.on('message', async (message) => {
 
     if (message.content[0] === '!') {
         let command = message.content.split(' ')[0].replace('!', '');
-        const { rows } = await db.query('SELECT response FROM commands WHERE guildid = $1 AND command = $2', [message.guild.id, command]);
+        const { rows } = await db.query('SELECT * FROM commands WHERE guildid = $1 AND command = $2', [message.guild.id, command]);
         if (rows.length === 0) {
             return;
         }
-        let response = rows[0].response;
-        let res = CommandTypes.getClass(response).getResponse();
-        if (!res) {
-            debug ('Unknown class returned from DB.');
-            debug(response);
-            return;
-        }
-        debug(command + ' used, sending response: ' + res);
-        message.channel.send(res);
+        parser.parse(
+            ['response', rows[0].type, 'get', rows[0].command],
+            {message: message, row: rows[0], print: (out) => message.channel.send(out)}
+        );
         return;
     }
 });
