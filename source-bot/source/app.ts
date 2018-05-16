@@ -12,6 +12,7 @@ var app = express();
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 logger.token('datelocaldebug', (req, res) => { return moment().format('D/M HH:mm:ss'); });
+app.use(express.static(path.resolve(__dirname, '../public')));
 app.use(logger(':remote-addr :remote-user [:datelocaldebug] ":method :status :url HTTP/:http-version" :response-time ms :res[content-length]'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));

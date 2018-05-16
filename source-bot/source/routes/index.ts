@@ -1,9 +1,10 @@
 import * as express from 'express';
 var router = express.Router();
+import * as path from 'path';
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-	res.send(`<html><body>https://discordapp.com/api/oauth2/authorize?client_id=<strong>&lt;YOUR ID HERE&gt;</strong>&scope=bot&permissions=0</body></html>`); 
+	res.sendFile(path.resolve(__dirname, '../../views/index.html'));
 });
 
 export default router;

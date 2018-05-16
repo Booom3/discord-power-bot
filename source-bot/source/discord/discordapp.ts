@@ -46,13 +46,12 @@ client.on('message', async (message) => {
 
     if (message.content[0] === '!') {
         let command = message.content.split(' ')[0].replace('!', '');
-        const { rows } = await db.query('SELECT * FROM commands WHERE guildid = $1 AND command = $2', [message.guild.id, command]);
-        if (rows.length === 0) {
-            return;
-        }
+        const res = await db.query('SELECT * FROM commands WHERE guildid = $1 AND command = $2', [message.guild.id, command]);
+        if (!res) return;
+        if (res.rows.length === 0) return;
         parser.parse(
-            ['response', rows[0].type, 'get', rows[0].command],
-            {message: message, row: rows[0], print: (out) => message.channel.send(out)}
+            ['response', res.rows[0].type, 'get', res.rows[0].command],
+            {message: message, row: res.rows[0], print: (out) => message.channel.send(out)}
         );
         return;
     }

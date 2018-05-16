@@ -58,7 +58,12 @@ typings/
 .env
 
 #typescript
-distribution
+distribution-bot
+distribution-web
 
 #vscode
 .vscode
+
+#webpack
+public/bundle.js
+public/bundle.js.map

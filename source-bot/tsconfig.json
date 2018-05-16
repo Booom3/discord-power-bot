@@ -3,7 +3,7 @@
         "target": "es5",
         "moduleResolution": "node",
         "baseUrl": "source",        
-        "outDir": "./distribution/",
+        "outDir": "../distribution-bot/",
         "sourceMap": true,
         "allowJs": true,
         "experimentalDecorators": true,
@@ -15,7 +15,7 @@
         ]
     },
     "include": [
-        "source/**/*"
+        "./source/**/*",
     ],
     "exclude": [
         "node_modules",
