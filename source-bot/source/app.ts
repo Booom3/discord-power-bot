@@ -7,6 +7,8 @@ import * as moment from 'moment';
 
 import index from './routes/index';
 
+require('dotenv').load();
+
 var app = express();
 
 // uncomment after placing your favicon in /public
