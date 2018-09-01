@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "test": "node ./distribution/binary/worldwideweb --run-tests",
-    "start": "node ./distribution/binary/worldwideweb"
+    "test": "node ./distribution-bot/binary/worldwideweb --run-tests",
+    "start": "node ./distribution-bot/binary/worldwideweb"
   },
   "dependencies": {
     "@types/react": "^16.3.14",
