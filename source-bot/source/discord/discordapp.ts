@@ -3,6 +3,7 @@ import * as db from '../database';
 import * as Discord from 'discord.js';
 const client = new Discord.Client();
 import * as yargs from 'yargs';
+import { RunAdminCommand } from './runcommand';
 const parser = yargs
     .commandDir('./admincommands')
     .exitProcess(false)
@@ -37,11 +38,10 @@ client.on('message', async (message) => {
         else {
             responseText = null;
         }
-        parser.parse(firstLine.slice(1), {message: message, responseText: responseText, print: (out) => message.channel.send(out)}, (err, argv, output) => {
-            if (output) {
-                message.channel.send('```' + output + '```');
-            }
-        });
+        const { err, argv, output } = await RunAdminCommand(firstLine.slice(1), { guild: message.guild, responseText: responseText, print: (out) => message.channel.send(out)})
+        if (output) {
+            message.channel.send('```' + output + '```');
+        }
     }
 
     if (message.content[0] === '!') {
@@ -51,7 +51,7 @@ client.on('message', async (message) => {
         if (res.rows.length === 0) return;
         parser.parse(
             ['response', res.rows[0].type, 'get', res.rows[0].command],
-            {message: message, row: res.rows[0], print: (out) => message.channel.send(out)}
+            { message: message, row: res.rows[0], print: (out) => message.channel.send(out) }
         );
         return;
     }
@@ -69,3 +69,5 @@ else {
         commandString = `<@${client.user.id}>`;
     });
 }
+
+export default client;

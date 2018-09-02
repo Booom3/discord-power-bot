@@ -4,10 +4,13 @@ import * as logger from 'morgan';
 import * as cookieParser from 'cookie-parser';
 import * as bodyParser from 'body-parser';
 import * as moment from 'moment';
+import * as dotenv from 'dotenv';
 
+let der = dotenv.load({path: '../../.env'});
+
+require('./discord/discordapp');
 import index from './routes/index';
 
-require('dotenv').load();
 
 var app = express();
 
@@ -19,8 +22,6 @@ app.use(logger(':remote-addr :remote-user [:datelocaldebug] ":method :status :ur
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-
-require('./discord/discordapp');
 
 app.use('/', index);
 
